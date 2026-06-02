@@ -6,16 +6,16 @@
 <meta name="theme-color" content="#1b4332">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Gestión Agro">
-<title>Gestión Agro</title>
+<meta name="apple-mobile-web-app-title" content="Gesti&#243;n Agro">
+<title>Gesti&#243;n Agro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* -------------------------------------------------------------
+  /* &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
      CONFIGURACION DE LECTURA  (no tocar salvo que cambien los IDs)
      El ID del archivo y la API Key se setean abajo en el bloque JS.
-     ------------------------------------------------------------- */
+     &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
 
   :root{
     --bg:        #f4f1e9;
@@ -52,7 +52,7 @@
 
   .wrap{ max-width:520px; margin:0 auto; padding:0 0 40px; }
 
-  /* -- HEADER ------------------------------------------------- */
+  /* &#9472;&#9472; HEADER &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
   header{
     position:sticky; top:0; z-index:30;
     padding:max(14px, env(safe-area-inset-top)) 18px 14px;
@@ -96,7 +96,7 @@
   .razon h1{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.15; }
   .razon .upd{ font-size:10.5px; opacity:.78; white-space:nowrap; }
 
-  /* -- TABS --------------------------------------------------- */
+  /* &#9472;&#9472; TABS &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
   nav{
     position:sticky; top:0; z-index:20;
     display:flex; gap:4px; padding:12px 14px 6px;
@@ -116,7 +116,7 @@
   nav button.active .pill{ background:var(--green); color:#fff; }
   nav .pill.alert{ background:var(--rojo); color:#fff; }
 
-  /* -- PANELES ------------------------------------------------ */
+  /* &#9472;&#9472; PANELES &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
   main{ padding:6px 14px 0; }
   .panel{ display:none; animation:fade .35s ease both; }
   .panel.show{ display:block; }
@@ -212,9 +212,9 @@
   <header id="hdr" style="display:none">
     <div class="topbar">
       <div class="brand">
-        <div class="leaf">??</div>
+        <div class="leaf">&#127807;</div>
         <div>
-          <b>Gestión Agro</b>
+          <b>Gesti&#243;n Agro</b>
           <span>Panel de control</span>
         </div>
       </div>
@@ -226,24 +226,24 @@
     </div>
     <div class="empresas" id="empresas"></div>
     <div class="razon">
-      <h1 id="razon">—</h1>
+      <h1 id="razon">&#8212;</h1>
       <div class="upd" id="upd"></div>
     </div>
   </header>
 
   <!-- TABS -->
   <nav id="tabs" style="display:none">
-    <button data-tab="alertas" class="active">?? Alertas <span class="pill" id="p-alertas">0</span></button>
-    <button data-tab="compras">?? Compras <span class="pill" id="p-compras">0</span></button>
-    <button data-tab="ventas">?? Ventas <span class="pill" id="p-ventas">0</span></button>
+    <button data-tab="alertas" class="active">&#128276; Alertas <span class="pill" id="p-alertas">0</span></button>
+    <button data-tab="compras">&#129534; Compras <span class="pill" id="p-compras">0</span></button>
+    <button data-tab="ventas">&#128200; Ventas <span class="pill" id="p-ventas">0</span></button>
   </nav>
 
   <main id="main">
     <!-- estado de carga inicial -->
     <div class="state" id="loading">
       <div class="sp"></div>
-      <h2>Cargando datos…</h2>
-      <p>Trayendo la información desde Drive</p>
+      <h2>Cargando datos&#8230;</h2>
+      <p>Trayendo la informaci&#243;n desde Drive</p>
     </div>
   </main>
 
@@ -251,14 +251,14 @@
 </div>
 
 <script>
-/* ---------------------------------------------------------------
-   CONFIGURACION  —  acá van el ID del archivo y la API Key
-   --------------------------------------------------------------- */
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   CONFIGURACION  \u2014  ac\u00E1 van el ID del archivo y la API Key
+   \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
 const FILE_ID = "163KFuUcOFwugCbW-9EgTNUrPgiFrBMq3";
 const API_KEY = "AIzaSyDZ9ieAZ-l8eL8QEn71NNOYVnhLlLFLSf4";
 const DRIVE_URL = id =>
   `https://www.googleapis.com/drive/v3/files/${FILE_ID}?alt=media&key=${API_KEY}&_=${Date.now()}`;
-/* --------------------------------------------------------------- */
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
 
 let DATA = null;
 let empresaActual = null;
@@ -272,9 +272,9 @@ const fmtMoney = n =>
 
 // normaliza fechas: acepta YYYYMMDD, DD/MM/YYYY o lo que venga
 function fmtFecha(v){
-  if(v === null || v === undefined) return "—";
+  if(v === null || v === undefined) return "\u2014";
   const s = String(v).trim();
-  if(!s || s === "-" || s === "----" || s === "None") return "—";
+  if(!s || s === "-" || s === "----" || s === "None") return "\u2014";
   if(/^\d{8}$/.test(s)) return `${s.slice(6,8)}/${s.slice(4,6)}/${s.slice(0,4)}`;
   return s;
 }
@@ -310,11 +310,11 @@ function mostrarError(err){
   $('foot').style.display = 'none';
   $('main').innerHTML = `
     <div class="state">
-      <div class="err-ic">??</div>
+      <div class="err-ic">\u{1F4E1}</div>
       <h2>No se pudieron cargar los datos</h2>
       <p>
-        Revisá que el archivo de Drive esté compartido como
-        <b>"Cualquiera con el enlace"</b> y que haya conexión a internet.<br><br>
+        Revis\u00E1 que el archivo de Drive est\u00E9 compartido como
+        <b>"Cualquiera con el enlace"</b> y que haya conexi\u00F3n a internet.<br><br>
         <code>${(err && err.message) ? err.message : 'error desconocido'}</code>
       </p>
       <button onclick="cargar()">Reintentar</button>
@@ -331,7 +331,7 @@ function render(){
   $('tabs').style.display = 'flex';
   $('foot').style.display = 'block';
 
-  // selector de empresas (dinámico)
+  // selector de empresas (din\u00E1mico)
   const cont = $('empresas');
   cont.innerHTML = '';
   nombres.forEach(n => {
@@ -344,7 +344,7 @@ function render(){
 
   const emp = empresas[empresaActual];
   $('razon').textContent = emp.razon_social || empresaActual;
-  $('upd').textContent = DATA.ultima_actualizacion ? '? ' + DATA.ultima_actualizacion : '';
+  $('upd').textContent = DATA.ultima_actualizacion ? '\u27F3 ' + DATA.ultima_actualizacion : '';
 
   // contadores de las solapas
   const a = emp.alertas || {};
@@ -387,20 +387,20 @@ function pintarPanel(emp){
   });
 }
 
-/* -- VISTA ALERTAS ------------------------------------------- */
+/* \u2500\u2500 VISTA ALERTAS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 function vistaAlertas(emp){
   const a = emp.alertas || {};
   const total = (a.compras||[]).length + (a.ventas||[]).length +
                 (a.vehiculos||[]).length + (a.seguros||[]).length;
   if(total === 0){
     return `<div style="height:6px"></div>
-      <div class="empty"><span class="ic">?</span>Sin alertas pendientes para esta empresa</div>`;
+      <div class="empty"><span class="ic">\u2713</span>Sin alertas pendientes para esta empresa</div>`;
   }
   let h = '';
-  h += grupo('??', 'Facturas a pagar', a.compras, c => cardAlerta(c.proveedor, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
-  h += grupo('??', 'Ventas a cobrar', a.ventas, c => cardAlerta(c.cliente, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
-  h += grupo('??', 'Vehículos', a.vehiculos, v => cardVehiculo(v));
-  h += grupo('???', 'Seguros', a.seguros, s => cardSeguro(s));
+  h += grupo('\u{1F4B8}', 'Facturas a pagar', a.compras, c => cardAlerta(c.proveedor, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
+  h += grupo('\u{1F4B0}', 'Ventas a cobrar', a.ventas, c => cardAlerta(c.cliente, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
+  h += grupo('\u{1F69C}', 'Veh\u00EDculos', a.vehiculos, v => cardVehiculo(v));
+  h += grupo('\u{1F6E1}\uFE0F', 'Seguros', a.seguros, s => cardSeguro(s));
   return h;
 }
 
@@ -414,7 +414,7 @@ function grupo(ic, titulo, items, fn){
 
 function badgeEstado(estado){
   if(estado === 'VENCIDO') return `<span class="badge b-venc">Vencido</span>`;
-  if(estado === 'PROXIMO') return `<span class="badge b-prox">Próximo</span>`;
+  if(estado === 'PROXIMO') return `<span class="badge b-prox">Pr\u00F3ximo</span>`;
   if(estado === 'DEBE')    return `<span class="badge b-debe">Debe</span>`;
   if(estado === 'PAGADO')  return `<span class="badge b-pag">Pagado</span>`;
   return `<span class="badge b-tipo">${estado||''}</span>`;
@@ -440,7 +440,7 @@ function cardVehiculo(v){
   return `<div class="card">
     <div class="row1">
       <div>
-        <div class="name">${esc(v.dominio)} <span style="font-weight:500;color:var(--ink-soft)">· ${esc(v.tipo)}</span></div>
+        <div class="name">${esc(v.dominio)} <span style="font-weight:500;color:var(--ink-soft)">\u00B7 ${esc(v.tipo)}</span></div>
         <div class="sub">${esc(v.campo)}</div>
       </div>
     </div>
@@ -455,7 +455,7 @@ function cardSeguro(s){
   return `<div class="card">
     <div class="row1">
       <div>
-        <div class="name">${esc(s.dominio)} <span style="font-weight:500;color:var(--ink-soft)">· ${esc(s.tipo_seguro)}</span></div>
+        <div class="name">${esc(s.dominio)} <span style="font-weight:500;color:var(--ink-soft)">\u00B7 ${esc(s.tipo_seguro)}</span></div>
         <div class="sub">${esc(s.aseguradora)}</div>
       </div>
     </div>
@@ -466,14 +466,14 @@ function cardSeguro(s){
   </div>`;
 }
 
-/* -- VISTA COMPRAS / VENTAS ---------------------------------- */
+/* \u2500\u2500 VISTA COMPRAS / VENTAS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 function vistaLista(items, tipo){
   if(!items || items.length === 0){
     return `<div style="height:6px"></div>
-      <div class="empty"><span class="ic">??</span>No hay ${tipo === 'compra' ? 'compras' : 'ventas'} para mostrar</div>`;
+      <div class="empty"><span class="ic">\u{1F4ED}</span>No hay ${tipo === 'compra' ? 'compras' : 'ventas'} para mostrar</div>`;
   }
-  const lbl = tipo === 'compra' ? 'Últimas compras' : 'Últimas ventas';
-  let h = `<div class="group-title"><span class="ic">${tipo==='compra'?'??':'??'}</span>${lbl}
+  const lbl = tipo === 'compra' ? '\u00DAltimas compras' : '\u00DAltimas ventas';
+  let h = `<div class="group-title"><span class="ic">${tipo==='compra'?'\u{1F9FE}':'\u{1F4C8}'}</span>${lbl}
              <span class="ct">${items.length}</span></div>`;
   h += items.map(it => {
     const quien = tipo === 'compra' ? it.proveedor : it.cliente;
@@ -482,7 +482,7 @@ function vistaLista(items, tipo){
       <div class="top">
         <div>
           <div class="who">${esc(quien)}</div>
-          <div class="fac">Fact. ${esc(it.factura)} · ${fmtFecha(it.fecha)}</div>
+          <div class="fac">Fact. ${esc(it.factura)} \u00B7 ${fmtFecha(it.fecha)}</div>
         </div>
         <div class="amount small">${fmtMoney(it.total)}</div>
       </div>
@@ -504,7 +504,7 @@ function vistaLista(items, tipo){
 
 function cortarTipo(t){
   t = String(t||'');
-  return t.length > 22 ? t.slice(0,22) + '…' : t;
+  return t.length > 22 ? t.slice(0,22) + '\u2026' : t;
 }
 
 function esc(s){
