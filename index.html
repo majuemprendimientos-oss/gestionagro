@@ -186,6 +186,41 @@
   .li .saldo-lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px; }
   .li .saldo-val{ font-family:'Fraunces',serif; font-weight:600; font-size:14.5px; font-variant-numeric:tabular-nums; }
 
+  /* &#9472;&#9472; BUSCADOR &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  .search{ position:relative; margin:14px 4px 4px; }
+  .search input{
+    width:100%; border:1px solid var(--line); background:var(--paper);
+    border-radius:13px; padding:12px 38px 12px 38px; font-family:inherit;
+    font-size:14.5px; color:var(--ink); box-shadow:var(--shadow); outline:none;
+    transition:border-color .15s;
+  }
+  .search input:focus{ border-color:var(--green-3); }
+  .search input::placeholder{ color:var(--ink-soft); opacity:.7; }
+  .search .si{ position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:15px; opacity:.5; pointer-events:none; }
+  .search .clear{
+    position:absolute; right:9px; top:50%; transform:translateY(-50%);
+    border:none; background:var(--bg-2); width:25px; height:25px; border-radius:50%;
+    cursor:pointer; color:var(--ink-soft); font-size:13px; line-height:1; display:none;
+  }
+  .search .clear:active{ background:var(--line); }
+
+  /* &#9472;&#9472; RESUMEN DE BUSQUEDA &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  .resumen{
+    background:linear-gradient(180deg, var(--green) 0%, var(--green-2) 100%);
+    color:#f4f1e9; border-radius:14px; padding:12px 15px; margin:9px 4px 12px;
+    box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:10px;
+    animation:fade .3s ease both;
+  }
+  .resumen .lbl{ font-size:11px; opacity:.8; letter-spacing:.3px; }
+  .resumen .cnt{ font-size:14px; font-weight:600; margin-top:2px; }
+  .resumen .val{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; font-variant-numeric:tabular-nums; margin-top:1px; }
+
+  .nota{
+    font-size:11.5px; color:var(--ink-soft); text-align:center; padding:9px 12px;
+    background:var(--paper); border:1px dashed var(--line); border-radius:12px;
+    margin:4px 4px 10px; line-height:1.4;
+  }
+
   /* estados de carga */
   .state{ padding:60px 24px; text-align:center; color:var(--ink-soft); }
   .state .sp{
@@ -233,7 +268,7 @@
 
   <!-- TABS -->
   <nav id="tabs" style="display:none">
-    <button data-tab="alertas" class="active">&#128276; Alertas <span class="pill" id="p-alertas">0</span></button>
+    <button data-tab="vehiculos" class="active">&#128668; Veh&#237;culos <span class="pill" id="p-vehiculos">0</span></button>
     <button data-tab="compras">&#129534; Compras <span class="pill" id="p-compras">0</span></button>
     <button data-tab="ventas">&#128200; Ventas <span class="pill" id="p-ventas">0</span></button>
   </nav>
@@ -262,7 +297,9 @@ const DRIVE_URL = id =>
 
 let DATA = null;
 let empresaActual = null;
-let tabActual = "alertas";
+let tabActual = "vehiculos";
+let filtros = { compra:'', venta:'' };
+const MAX_MOSTRAR = 100;
 
 const $ = id => document.getElementById(id);
 
@@ -348,12 +385,11 @@ function render(){
 
   // contadores de las solapas
   const a = emp.alertas || {};
-  const totAlertas = (a.compras||[]).length + (a.ventas||[]).length +
-                     (a.vehiculos||[]).length + (a.seguros||[]).length;
+  const totVehic = (a.vehiculos||[]).length + (a.seguros||[]).length;
   const debeCompras = (emp.compras||[]).filter(x => x.estado === 'DEBE').length;
   const debeVentas  = (emp.ventas ||[]).filter(x => x.estado === 'DEBE').length;
 
-  setPill('p-alertas', totAlertas, true);
+  setPill('p-vehiculos', totVehic, true);
   setPill('p-compras', debeCompras, false);
   setPill('p-ventas',  debeVentas,  false);
 
@@ -377,28 +413,44 @@ function pintarTabs(){
 
 function pintarPanel(emp){
   let html = '';
-  if(tabActual === 'alertas')      html = vistaAlertas(emp);
-  else if(tabActual === 'compras') html = vistaLista(emp.compras || [], 'compra');
-  else                             html = vistaLista(emp.ventas  || [], 'venta');
+  if(tabActual === 'vehiculos')    html = vistaVehiculos(emp);
+  else if(tabActual === 'compras') html = vistaListaConBuscador(emp.compras || [], 'compra');
+  else                             html = vistaListaConBuscador(emp.ventas  || [], 'venta');
   $('main').innerHTML = `<div class="panel show">${html}</div>`;
-  // stagger en las cards
-  document.querySelectorAll('#main .card, #main .li').forEach((el,i)=>{
-    el.style.animationDelay = Math.min(i*28, 320) + 'ms';
-  });
+
+  if(tabActual === 'compras' || tabActual === 'ventas'){
+    const tipo  = tabActual === 'compras' ? 'compra' : 'venta';
+    const items = tabActual === 'compras' ? (emp.compras||[]) : (emp.ventas||[]);
+    wireBuscador(items, tipo);
+  } else {
+    // stagger en las cards de vehiculos
+    document.querySelectorAll('#main .card').forEach((el,i)=>{
+      el.style.animationDelay = Math.min(i*28, 320) + 'ms';
+    });
+  }
 }
 
-/* \u2500\u2500 VISTA ALERTAS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
-function vistaAlertas(emp){
+/* \u2500\u2500 BUSCADOR (engancha el input sin perder el foco) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function wireBuscador(items, tipo){
+  const inp = $('buscador');
+  const clr = $('btnClear');
+  if(!inp) return;
+  const refrescarClear = () => { clr.style.display = inp.value ? 'block' : 'none'; };
+  inp.oninput = () => { filtros[tipo] = inp.value; refrescarClear(); renderLista(items, tipo); };
+  clr.onclick  = () => { inp.value=''; filtros[tipo]=''; refrescarClear(); renderLista(items, tipo); inp.focus(); };
+  refrescarClear();
+  renderLista(items, tipo);
+}
+
+/* \u2500\u2500 VISTA VEHICULOS (solo vehiculos + seguros) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function vistaVehiculos(emp){
   const a = emp.alertas || {};
-  const total = (a.compras||[]).length + (a.ventas||[]).length +
-                (a.vehiculos||[]).length + (a.seguros||[]).length;
+  const total = (a.vehiculos||[]).length + (a.seguros||[]).length;
   if(total === 0){
     return `<div style="height:6px"></div>
-      <div class="empty"><span class="ic">\u2713</span>Sin alertas pendientes para esta empresa</div>`;
+      <div class="empty"><span class="ic">\u2713</span>Sin vencimientos pr\u00F3ximos de veh\u00EDculos o seguros</div>`;
   }
   let h = '';
-  h += grupo('\u{1F4B8}', 'Facturas a pagar', a.compras, c => cardAlerta(c.proveedor, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
-  h += grupo('\u{1F4B0}', 'Ventas a cobrar', a.ventas, c => cardAlerta(c.cliente, 'Fact. ' + c.factura, c.saldo, c.vence, c.estado, true));
   h += grupo('\u{1F69C}', 'Veh\u00EDculos', a.vehiculos, v => cardVehiculo(v));
   h += grupo('\u{1F6E1}\uFE0F', 'Seguros', a.seguros, s => cardSeguro(s));
   return h;
@@ -466,40 +518,92 @@ function cardSeguro(s){
   </div>`;
 }
 
-/* \u2500\u2500 VISTA COMPRAS / VENTAS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
-function vistaLista(items, tipo){
+/* \u2500\u2500 VISTA COMPRAS / VENTAS (con buscador) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function vistaListaConBuscador(items, tipo){
   if(!items || items.length === 0){
     return `<div style="height:6px"></div>
       <div class="empty"><span class="ic">\u{1F4ED}</span>No hay ${tipo === 'compra' ? 'compras' : 'ventas'} para mostrar</div>`;
   }
-  const lbl = tipo === 'compra' ? '\u00DAltimas compras' : '\u00DAltimas ventas';
-  let h = `<div class="group-title"><span class="ic">${tipo==='compra'?'\u{1F9FE}':'\u{1F4C8}'}</span>${lbl}
-             <span class="ct">${items.length}</span></div>`;
-  h += items.map(it => {
-    const quien = tipo === 'compra' ? it.proveedor : it.cliente;
-    const tipoComp = (tipo === 'venta' && it.tipo) ? `<span class="badge b-tipo">${esc(cortarTipo(it.tipo))}</span>` : '';
-    return `<div class="li">
-      <div class="top">
-        <div>
-          <div class="who">${esc(quien)}</div>
-          <div class="fac">Fact. ${esc(it.factura)} \u00B7 ${fmtFecha(it.fecha)}</div>
-        </div>
-        <div class="amount small">${fmtMoney(it.total)}</div>
-      </div>
-      <div class="bottom">
-        <div>
-          ${badgeEstado(it.estado)}
-          ${tipoComp}
-          ${(it.vence && it.vence !== '-') ? `<span class="vto" style="margin-left:6px">Vence: <b>${fmtFecha(it.vence)}</b></span>` : ''}
-        </div>
-        <div style="text-align:right">
-          <div class="saldo-lbl">Saldo</div>
-          <div class="saldo-val ${it.estado==='DEBE'?'':''}" style="color:${it.estado==='DEBE'?'var(--rojo)':'var(--ok)'}">${fmtMoney(it.saldo)}</div>
-        </div>
-      </div>
+  const ph = tipo === 'compra' ? 'Buscar proveedor o N\u00B0 factura\u2026' : 'Buscar cliente o N\u00B0 factura\u2026';
+  return `<div class="search">
+      <span class="si">\u{1F50D}</span>
+      <input id="buscador" type="text" inputmode="search" autocomplete="off"
+             placeholder="${ph}" value="${esc(filtros[tipo])}">
+      <button class="clear" id="btnClear" title="Borrar">\u2715</button>
+    </div>
+    <div id="resBox"></div>
+    <div id="listBox"></div>`;
+}
+
+// renderiza SOLO el resumen + la lista (no toca el input, as\u00ED no pierde el foco)
+function renderLista(items, tipo){
+  const term = (filtros[tipo] || '').trim().toLowerCase();
+  let filtrados = items;
+  if(term){
+    filtrados = items.filter(it => {
+      const quien = (tipo === 'compra' ? it.proveedor : it.cliente) || '';
+      return quien.toLowerCase().includes(term) ||
+             String(it.factura || '').toLowerCase().includes(term);
+    });
+  }
+  const mostrar = filtrados.slice(0, MAX_MOSTRAR);
+
+  // \u2500\u2500 resumen \u2500\u2500
+  let res = '';
+  if(term && filtrados.length > 0){
+    const totalSaldo = filtrados.reduce((s,x)=> s + (Number(x.saldo)||0), 0);
+    const lblSaldo = tipo === 'compra' ? 'Saldo que debe' : 'Saldo a cobrar';
+    res = `<div class="resumen">
+      <div><div class="lbl">Resultados</div><div class="cnt">${filtrados.length} factura${filtrados.length===1?'':'s'}</div></div>
+      <div style="text-align:right"><div class="lbl">${lblSaldo}</div><div class="val">${fmtMoney(totalSaldo)}</div></div>
     </div>`;
-  }).join('');
-  return h;
+  } else if(!term && items.length > MAX_MOSTRAR){
+    res = `<div class="nota">Mostrando las \u00FAltimas ${MAX_MOSTRAR} de ${items.length}.<br>Us\u00E1 el buscador para encontrar el resto.</div>`;
+  }
+  $('resBox').innerHTML = res;
+
+  // \u2500\u2500 lista \u2500\u2500
+  if(filtrados.length === 0){
+    $('listBox').innerHTML = `<div class="empty"><span class="ic">\u{1F50D}</span>Sin resultados para "${esc(filtros[tipo])}"</div>`;
+    return;
+  }
+  const lbl = tipo === 'compra' ? 'Compras' : 'Ventas';
+  const ic  = tipo === 'compra' ? '\u{1F9FE}' : '\u{1F4C8}';
+  let h = `<div class="group-title"><span class="ic">${ic}</span>${lbl}
+             <span class="ct">${term ? filtrados.length : items.length}</span></div>`;
+  h += mostrar.map(it => filaFactura(it, tipo)).join('');
+  if(filtrados.length > MAX_MOSTRAR){
+    h += `<div class="nota">+${filtrados.length - MAX_MOSTRAR} m\u00E1s. Afin\u00E1 la b\u00FAsqueda para verlas.</div>`;
+  }
+  $('listBox').innerHTML = h;
+  $('listBox').querySelectorAll('.li').forEach((el,i)=>{
+    el.style.animationDelay = Math.min(i*22, 300) + 'ms';
+  });
+}
+
+function filaFactura(it, tipo){
+  const quien = tipo === 'compra' ? it.proveedor : it.cliente;
+  const tipoComp = (tipo === 'venta' && it.tipo) ? `<span class="badge b-tipo">${esc(cortarTipo(it.tipo))}</span>` : '';
+  return `<div class="li">
+    <div class="top">
+      <div>
+        <div class="who">${esc(quien)}</div>
+        <div class="fac">Fact. ${esc(it.factura)} \u00B7 ${fmtFecha(it.fecha)}</div>
+      </div>
+      <div class="amount small">${fmtMoney(it.total)}</div>
+    </div>
+    <div class="bottom">
+      <div>
+        ${badgeEstado(it.estado)}
+        ${tipoComp}
+        ${(it.vence && it.vence !== '-') ? `<span class="vto" style="margin-left:6px">Vence: <b>${fmtFecha(it.vence)}</b></span>` : ''}
+      </div>
+      <div style="text-align:right">
+        <div class="saldo-lbl">Saldo</div>
+        <div class="saldo-val" style="color:${it.estado==='DEBE'?'var(--rojo)':'var(--ok)'}">${fmtMoney(it.saldo)}</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function cortarTipo(t){
