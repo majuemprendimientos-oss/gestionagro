@@ -536,6 +536,14 @@ function vistaListaConBuscador(items, tipo){
 }
 
 // renderiza SOLO el resumen + la lista (no toca el input, as\u00ED no pierde el foco)
+function _fechaKey(v){
+  const s = String(v == null ? '' : v).trim();
+  if(/^\d{8}$/.test(s)) return Number(s);                 // YYYYMMDD
+  const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);        // DD/MM/YYYY
+  if(m) return Number(m[3] + m[2] + m[1]);
+  return 0;
+}
+
 function renderLista(items, tipo){
   const term = (filtros[tipo] || '').trim().toLowerCase();
   let filtrados = items;
@@ -546,9 +554,18 @@ function renderLista(items, tipo){
              String(it.factura || '').toLowerCase().includes(term);
     });
   }
-  const mostrar = filtrados.slice(0, MAX_MOSTRAR);
 
-  // \u2500\u2500 resumen \u2500\u2500
+  // separar en DEBE (arriba) y PAGADAS (abajo); cada grupo cronologico, mas nueva primero
+  const cmpDesc = (a,b) => _fechaKey(b.fecha) - _fechaKey(a.fecha);
+  const deben   = filtrados.filter(x => x.estado !== 'PAGADO').sort(cmpDesc);
+  const pagadas = filtrados.filter(x => x.estado === 'PAGADO').sort(cmpDesc);
+
+  // limite: primero TODAS las que deben, despues completar con pagadas hasta MAX_MOSTRAR
+  const slots = Math.max(0, MAX_MOSTRAR - deben.length);
+  const pagadasMostrar = pagadas.slice(0, slots);
+  const pagadasOcultas = pagadas.length - pagadasMostrar.length;
+
+  // resumen
   let res = '';
   if(term && filtrados.length > 0){
     const totalSaldo = filtrados.reduce((s,x)=> s + (Number(x.saldo)||0), 0);
@@ -558,22 +575,27 @@ function renderLista(items, tipo){
       <div style="text-align:right"><div class="lbl">${lblSaldo}</div><div class="val">${fmtMoney(totalSaldo)}</div></div>
     </div>`;
   } else if(!term && items.length > MAX_MOSTRAR){
-    res = `<div class="nota">Mostrando las \u00FAltimas ${MAX_MOSTRAR} de ${items.length}.<br>Us\u00E1 el buscador para encontrar el resto.</div>`;
+    res = `<div class="nota">Mostrando todas las que deben + las pagadas m\u00E1s recientes (hasta ${MAX_MOSTRAR}).<br>Us\u00E1 el buscador para encontrar el resto.</div>`;
   }
   $('resBox').innerHTML = res;
 
-  // \u2500\u2500 lista \u2500\u2500
+  // lista
   if(filtrados.length === 0){
     $('listBox').innerHTML = `<div class="empty"><span class="ic">\u{1F50D}</span>Sin resultados para "${esc(filtros[tipo])}"</div>`;
     return;
   }
-  const lbl = tipo === 'compra' ? 'Compras' : 'Ventas';
-  const ic  = tipo === 'compra' ? '\u{1F9FE}' : '\u{1F4C8}';
-  let h = `<div class="group-title"><span class="ic">${ic}</span>${lbl}
-             <span class="ct">${term ? filtrados.length : items.length}</span></div>`;
-  h += mostrar.map(it => filaFactura(it, tipo)).join('');
-  if(filtrados.length > MAX_MOSTRAR){
-    h += `<div class="nota">+${filtrados.length - MAX_MOSTRAR} m\u00E1s. Afin\u00E1 la b\u00FAsqueda para verlas.</div>`;
+
+  let h = '';
+  if(deben.length){
+    h += `<div class="group-title"><span class="ic">\u{1F534}</span>Deben<span class="ct">${deben.length}</span></div>`;
+    h += deben.map(it => filaFactura(it, tipo)).join('');
+  }
+  if(pagadasMostrar.length){
+    h += `<div class="group-title"><span class="ic">\u{2705}</span>Pagadas<span class="ct">${pagadas.length}</span></div>`;
+    h += pagadasMostrar.map(it => filaFactura(it, tipo)).join('');
+  }
+  if(pagadasOcultas > 0){
+    h += `<div class="nota">+${pagadasOcultas} pagada${pagadasOcultas===1?'':'s'} m\u00E1s. Afin\u00E1 la b\u00FAsqueda para verlas.</div>`;
   }
   $('listBox').innerHTML = h;
   $('listBox').querySelectorAll('.li').forEach((el,i)=>{
