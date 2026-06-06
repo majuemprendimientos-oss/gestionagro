@@ -221,6 +221,43 @@
     margin:4px 4px 10px; line-height:1.4;
   }
 
+  /* -- CHOFERES -- */
+  .chofer-card{ cursor:pointer; transition:transform .12s; }
+  .chofer-card:active{ transform:scale(.99); }
+  .ch-row{ display:flex; align-items:center; gap:11px; }
+  .ch-ava{ width:38px; height:38px; border-radius:50%; background:var(--green); color:#f4f1e9;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex:0 0 auto; }
+  .ch-info{ min-width:0; flex:1; }
+  .ch-arrow{ color:var(--ink-soft); font-size:22px; flex:0 0 auto; line-height:1; }
+  .back{ display:inline-flex; align-items:center; gap:4px; border:none; background:transparent;
+    color:var(--green-2); font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer;
+    padding:8px 4px; margin:4px 0 2px; }
+  .back:active{ opacity:.6; }
+  .ch-head{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; color:var(--ink); margin:2px 4px 12px; }
+  .hero-total{ background:linear-gradient(180deg, var(--green) 0%, var(--green-2) 100%);
+    color:#f4f1e9; border-radius:16px; padding:16px; text-align:center; box-shadow:var(--shadow); margin-bottom:10px; animation:fade .3s ease both; }
+  .hero-total .lbl{ font-size:12px; opacity:.85; }
+  .hero-total .val{ font-family:'Fraunces',serif; font-weight:600; font-size:30px; font-variant-numeric:tabular-nums; margin-top:2px; }
+  .res-box{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:2px 14px; box-shadow:var(--shadow); margin-bottom:10px; }
+  .res-row{ display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:9px 0; font-size:13.5px; color:var(--ink-soft); border-top:1px solid var(--line); }
+  .res-row:first-child{ border-top:none; }
+  .res-row b{ color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+  .verviajes{ width:100%; border:1px solid var(--line); background:var(--paper); color:var(--green-2);
+    font-family:inherit; font-size:14px; font-weight:600; border-radius:13px; padding:12px 14px;
+    cursor:pointer; box-shadow:var(--shadow); text-align:left; }
+  .verviajes:active{ background:var(--bg-2); }
+  .vchev{ display:inline-block; transition:transform .15s; font-size:12px; }
+  .verviajes.open .vchev{ transform:rotate(180deg); }
+  .viajes-wrap{ margin-top:8px; }
+  .viaje{ background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:7px; box-shadow:var(--shadow); animation:fade .3s ease both; }
+  .v-top{ font-size:13px; }
+  .v-ruta{ color:var(--ink-soft); }
+  .v-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:7px; }
+  .chip{ font-size:11px; background:var(--bg-2); color:var(--ink-soft); padding:3px 9px; border-radius:8px; font-variant-numeric:tabular-nums; }
+  .chip-com{ background:var(--green); color:#f4f1e9; }
+  .chip-caja{ background:var(--ok-bg); color:var(--ok); }
+
   /* estados de carga */
   .state{ padding:60px 24px; text-align:center; color:var(--ink-soft); }
   .state .sp{
@@ -268,9 +305,10 @@
 
   <!-- TABS -->
   <nav id="tabs" style="display:none">
-    <button data-tab="vehiculos" class="active">&#128668; Veh&#237;culos <span class="pill" id="p-vehiculos">0</span></button>
-    <button data-tab="compras">&#129534; Compras <span class="pill" id="p-compras">0</span></button>
-    <button data-tab="ventas">&#128200; Ventas <span class="pill" id="p-ventas">0</span></button>
+    <button data-tab="vehiculos" id="tab-vehiculos" class="active">&#128668; Veh&#237;culos <span class="pill" id="p-vehiculos">0</span></button>
+    <button data-tab="compras" id="tab-compras">&#129534; Compras <span class="pill" id="p-compras">0</span></button>
+    <button data-tab="ventas" id="tab-ventas">&#128200; Ventas <span class="pill" id="p-ventas">0</span></button>
+    <button data-tab="choferes" id="tab-choferes" style="display:none">&#128666; Choferes <span class="pill" id="p-choferes">0</span></button>
   </nav>
 
   <main id="main">
@@ -298,6 +336,8 @@ const DRIVE_URL = id =>
 let DATA = null;
 let empresaActual = null;
 let tabActual = "vehiculos";
+let choferSel = null;   // indice del chofer (nivel 2/3)
+let liqSel    = null;   // indice de la liquidacion (nivel 3)
 let filtros = { compra:'', venta:'' };
 const MAX_MOSTRAR = 100;
 
@@ -375,7 +415,7 @@ function render(){
     const b = document.createElement('button');
     b.textContent = n;
     if(n === empresaActual) b.classList.add('active');
-    b.onclick = () => { empresaActual = n; render(); };
+    b.onclick = () => { empresaActual = n; choferSel = null; liqSel = null; render(); };
     cont.appendChild(b);
   });
 
@@ -393,6 +433,31 @@ function render(){
   setPill('p-compras', debeCompras, false);
   setPill('p-ventas',  debeVentas,  false);
 
+  // Mostrar/ocultar solapas segun las secciones configuradas en PANEL_ADMIN.
+  // Si el JSON no trae 'secciones' (backend viejo), se muestran todas (compat).
+  const secs = emp.secciones || null;
+  const secOn = (name, fb) => secs ? secs.includes(name) : fb;
+  const visible = {
+    vehiculos: secOn('VEHICULOS', true),
+    compras:   secOn('COMPRAS',   true),
+    ventas:    secOn('VENTAS',    true),
+    choferes:  secs ? secs.includes('CHOFERES') : ((emp.choferes||[]).length > 0),
+  };
+  ['vehiculos','compras','ventas','choferes'].forEach(t => {
+    const b = $('tab-' + t);
+    if(b) b.style.display = visible[t] ? '' : 'none';
+  });
+  // Pill de choferes: liquidaciones pendientes
+  const _chs = emp.choferes || [];
+  const pend = _chs.reduce((s,c)=> s + (c.liquidaciones||[]).filter(l=>l.estado!=='PAGADA').length, 0);
+  setPill('p-choferes', pend, pend>0);
+  // Si la solapa activa quedo oculta, saltar a la primera visible
+  if(!visible[tabActual]){
+    const primera = ['vehiculos','compras','ventas','choferes'].find(t => visible[t]);
+    tabActual = primera || 'vehiculos';
+    choferSel = null; liqSel = null;
+  }
+
   pintarTabs();
   pintarPanel(emp);
 }
@@ -407,15 +472,16 @@ function pintarTabs(){
   document.querySelectorAll('#tabs button').forEach(b => {
     const on = b.dataset.tab === tabActual;
     b.classList.toggle('active', on);
-    b.onclick = () => { tabActual = b.dataset.tab; const emp = getEmpresas(DATA)[empresaActual]; pintarTabs(); pintarPanel(emp); };
+    b.onclick = () => { tabActual = b.dataset.tab; choferSel = null; liqSel = null; const emp = getEmpresas(DATA)[empresaActual]; pintarTabs(); pintarPanel(emp); };
   });
 }
 
 function pintarPanel(emp){
   let html = '';
-  if(tabActual === 'vehiculos')    html = vistaVehiculos(emp);
-  else if(tabActual === 'compras') html = vistaListaConBuscador(emp.compras || [], 'compra');
-  else                             html = vistaListaConBuscador(emp.ventas  || [], 'venta');
+  if(tabActual === 'vehiculos')      html = vistaVehiculos(emp);
+  else if(tabActual === 'compras')   html = vistaListaConBuscador(emp.compras || [], 'compra');
+  else if(tabActual === 'ventas')    html = vistaListaConBuscador(emp.ventas  || [], 'venta');
+  else                               html = vistaChoferesPanel(emp);
   $('main').innerHTML = `<div class="panel show">${html}</div>`;
 
   if(tabActual === 'compras' || tabActual === 'ventas'){
@@ -431,6 +497,101 @@ function pintarPanel(emp){
 }
 
 /* \u2500\u2500 BUSCADOR (engancha el input sin perder el foco) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+/* -- CHOFERES (3 niveles) ------------------------------------ */
+function vistaChoferesPanel(emp){
+  const chs = emp.choferes || [];
+  if(choferSel === null) return vistaChoferes(chs);
+  const ch = chs[choferSel];
+  if(!ch){ choferSel = null; return vistaChoferes(chs); }
+  if(liqSel === null) return vistaLiquidaciones(ch);
+  const liq = (ch.liquidaciones || [])[liqSel];
+  if(!liq){ liqSel = null; return vistaLiquidaciones(ch); }
+  return vistaLiqDetalle(ch, liq);
+}
+
+function vistaChoferes(chs){
+  if(!chs.length) return `<div class="empty"><span class="ic">&#128666;</span>Sin choferes</div>`;
+  let h = `<div class="group-title"><span class="ic">&#128666;</span>Choferes<span class="ct">${chs.length}</span></div>`;
+  chs.forEach((c, i) => {
+    const ult = (c.liquidaciones || [])[0];
+    const sub = ult ? `${esc(ult.periodo)} &middot; cobra ${fmtMoney(ult.total_cobrar)}` : 'Sin liquidaciones';
+    const ini = (c.nombre || '?').trim().split(/\s+/).map(x => x[0] || '').slice(0,2).join('').toUpperCase();
+    h += `<div class="card chofer-card" onclick="verChofer(${i})">
+      <div class="ch-row">
+        <div class="ch-ava">${esc(ini)}</div>
+        <div class="ch-info"><div class="name">${esc(c.nombre || '')}</div><div class="sub">${sub}</div></div>
+        <span class="ch-arrow">&#8250;</span>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+function vistaLiquidaciones(ch){
+  const liqs = ch.liquidaciones || [];
+  let h = `<button class="back" onclick="volverChoferes()">&#8249; Choferes</button>`;
+  h += `<div class="ch-head">${esc(ch.nombre || '')}</div>`;
+  if(!liqs.length) return h + `<div class="empty"><span class="ic">&#128197;</span>Sin liquidaciones</div>`;
+  liqs.forEach((l, i) => {
+    const pag = l.estado === 'PAGADA';
+    h += `<div class="card chofer-card" onclick="verLiq(${i})">
+      <div class="row1">
+        <div class="name">${esc(l.periodo)}</div>
+        <span class="badge ${pag ? 'b-pag' : 'b-debe'}">${pag ? 'Pagada' : 'Pendiente'}</span>
+      </div>
+      <div class="sub" style="margin-top:6px">Total <b>${fmtMoney(l.total_cobrar)}</b> &middot; ${l.cant_viajes} viaje${l.cant_viajes === 1 ? '' : 's'}</div>
+    </div>`;
+  });
+  return h;
+}
+
+function vistaLiqDetalle(ch, liq){
+  const r = liq.resumen || {};
+  let h = `<button class="back" onclick="volverLiqs()">&#8249; ${esc(ch.nombre || '')}</button>`;
+  h += `<div class="ch-head">${esc(ch.nombre || '')} &middot; ${esc(liq.periodo)}</div>`;
+  h += `<div class="hero-total"><div class="lbl">Total a cobrar</div><div class="val">${fmtMoney(liq.total_cobrar)}</div></div>`;
+
+  const fila = (lbl, val) => `<div class="res-row"><span>${lbl}</span><b>${fmtMoney(val)}</b></div>`;
+  h += `<div class="res-box">
+    ${fila('Sueldo 15%', r.sueldo)}
+    ${fila('Caja entregada', r.caja)}
+    ${fila('Gastos rendidos', r.gastos)}
+    ${fila('Diferencia caja', r.diferencia_caja)}
+    ${fila('Anticipos', r.anticipos)}
+    ${fila('Arranque', r.arranque)}
+    ${(Math.abs(Number(r.saldo_anterior) || 0) > 0.01) ? fila('Saldo mes ant.', r.saldo_anterior) : ''}
+  </div>`;
+
+  const viajes = liq.viajes || [];
+  h += `<button class="verviajes" onclick="this.classList.toggle('open'); var w=this.nextElementSibling; w.style.display = (w.style.display==='none' ? 'block' : 'none');">
+    <span class="vchev">&#9662;</span> Ver viajes (${viajes.length})
+  </button>`;
+  h += `<div class="viajes-wrap" style="display:none">`;
+  if(!viajes.length){
+    h += `<div class="nota">Sin viajes cargados</div>`;
+  } else {
+    viajes.forEach(v => {
+      const chips = [];
+      chips.push(`<span class="chip">${esc(String(v.km))} km</span>`);
+      chips.push(`<span class="chip">Tarifa ${fmtMoney(v.tarifa)}</span>`);
+      chips.push(`<span class="chip chip-com">Comisi&#243;n ${fmtMoney(v.comision)}</span>`);
+      if((Number(v.caja) || 0) > 0) chips.push(`<span class="chip chip-caja">Caja ${fmtMoney(v.caja)}</span>`);
+      h += `<div class="viaje">
+        <div class="v-top"><b>${esc(v.fecha)}</b> <span class="v-ruta">${esc(v.origen)} &#8594; ${esc(v.destino)}</span></div>
+        <div class="v-chips">${chips.join('')}</div>
+      </div>`;
+    });
+  }
+  h += `</div>`;
+  return h;
+}
+
+window.verChofer = (i) => { choferSel = i; liqSel = null; repintarPanel(); };
+window.verLiq = (i) => { liqSel = i; repintarPanel(); };
+window.volverChoferes = () => { choferSel = null; liqSel = null; repintarPanel(); };
+window.volverLiqs = () => { liqSel = null; repintarPanel(); };
+function repintarPanel(){ pintarPanel(getEmpresas(DATA)[empresaActual]); }
+
 function wireBuscador(items, tipo){
   const inp = $('buscador');
   const clr = $('btnClear');
@@ -574,8 +735,6 @@ function renderLista(items, tipo){
       <div><div class="lbl">Resultados</div><div class="cnt">${filtrados.length} factura${filtrados.length===1?'':'s'}</div></div>
       <div style="text-align:right"><div class="lbl">${lblSaldo}</div><div class="val">${fmtMoney(totalSaldo)}</div></div>
     </div>`;
-  } else if(!term && items.length > MAX_MOSTRAR){
-    res = `<div class="nota">Mostrando todas las que deben + las pagadas m\u00E1s recientes (hasta ${MAX_MOSTRAR}).<br>Us\u00E1 el buscador para encontrar el resto.</div>`;
   }
   $('resBox').innerHTML = res;
 
