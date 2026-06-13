@@ -515,7 +515,15 @@ function vistaChoferes(chs){
   let h = `<div class="group-title"><span class="ic">&#128666;</span>Choferes<span class="ct">${chs.length}</span></div>`;
   chs.forEach((c, i) => {
     const ult = (c.liquidaciones || [])[0];
-    const sub = ult ? `${esc(ult.periodo)} &middot; cobra ${fmtMoney(ult.total_cobrar)}` : 'Sin liquidaciones';
+    let sub;
+    if (!ult) {
+      sub = 'Sin liquidaciones';
+    } else if (ult.estado === 'PAGADA') {
+      sub = `${esc(ult.periodo)} &middot; pagada`;
+    } else {
+      const s = (ult.saldo_cobrar != null) ? ult.saldo_cobrar : ult.total_cobrar;
+      sub = `${esc(ult.periodo)} &middot; saldo ${fmtMoney(s)}`;
+    }
     const ini = (c.nombre || '?').trim().split(/\s+/).map(x => x[0] || '').slice(0,2).join('').toUpperCase();
     h += `<div class="card chofer-card" onclick="verChofer(${i})">
       <div class="ch-row">
@@ -550,7 +558,13 @@ function vistaLiqDetalle(ch, liq){
   const r = liq.resumen || {};
   let h = `<button class="back" onclick="volverLiqs()">&#8249; ${esc(ch.nombre || '')}</button>`;
   h += `<div class="ch-head">${esc(ch.nombre || '')} &middot; ${esc(liq.periodo)}</div>`;
-  h += `<div class="hero-total"><div class="lbl">Total a cobrar</div><div class="val">${fmtMoney(liq.total_cobrar)}</div></div>`;
+  const pagada = liq.estado === 'PAGADA';
+  const saldo  = (liq.saldo_cobrar != null) ? liq.saldo_cobrar : liq.total_cobrar;
+  if (pagada) {
+    h += `<div class="hero-total"><div class="lbl">Pagada &middot; Total</div><div class="val">${fmtMoney(liq.total_cobrar)}</div></div>`;
+  } else {
+    h += `<div class="hero-total"><div class="lbl">Saldo a cobrar</div><div class="val">${fmtMoney(saldo)}</div></div>`;
+  }
 
   const fila = (lbl, val) => `<div class="res-row"><span>${lbl}</span><b>${fmtMoney(val)}</b></div>`;
   h += `<div class="res-box">
