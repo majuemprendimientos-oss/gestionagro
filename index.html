@@ -187,6 +187,20 @@
   .li .saldo-lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px; }
   .li .saldo-val{ font-family:'Fraunces',serif; font-weight:600; font-size:14.5px; font-variant-numeric:tabular-nums; }
 
+  /* detalle de pagos (desplegable al tocar la factura) */
+  .li.li-exp{ cursor:pointer; }
+  .li .chev{ display:inline-block; margin-left:6px; color:var(--ink-soft); font-size:13px; transition:transform .18s; }
+  .li.open .chev{ transform:rotate(90deg); }
+  .pagos-wrap{ margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); animation:fade .25s ease both; }
+  .pagos-title{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .pago-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:5px 0; font-size:12.5px; }
+  .pago-row + .pago-row{ border-top:1px solid var(--line); }
+  .pago-fecha{ color:var(--ink-soft); font-variant-numeric:tabular-nums; min-width:74px; }
+  .pago-medio{ flex:1; color:var(--ink); }
+  .pago-monto{ font-weight:600; font-variant-numeric:tabular-nums; }
+  .pago-obs{ font-size:11px; color:var(--ink-soft); margin-top:1px; }
+  .pagos-empty{ font-size:12px; color:var(--ink-soft); font-style:italic; }
+
   /* &#9472;&#9472; BUSCADOR &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
   .search{ position:relative; margin:14px 4px 4px; }
   .search input{
@@ -780,7 +794,21 @@ function renderLista(items, tipo){
 function filaFactura(it, tipo){
   const quien = tipo === 'compra' ? it.proveedor : it.cliente;
   const tipoComp = (tipo === 'venta' && it.tipo) ? `<span class="badge b-tipo">${esc(cortarTipo(it.tipo))}</span>` : '';
-  return `<div class="li">
+  const pagos = Array.isArray(it.pagos) ? it.pagos : [];
+  const tienePagos = pagos.length > 0;
+  let pagosHtml = '';
+  if(tienePagos){
+    pagosHtml = pagos.map(p => `
+      <div class="pago-row">
+        <span class="pago-fecha">${fmtFecha(p.fecha)}</span>
+        <span class="pago-medio">${esc(p.medio)}${p.obs ? `<div class="pago-obs">${esc(p.obs)}</div>` : ''}</span>
+        <span class="pago-monto">${fmtMoney(p.monto)}</span>
+      </div>`).join('');
+  }
+  const clsExp  = tienePagos ? ' li-exp' : '';
+  const onTap   = tienePagos ? ' onclick="togglePagos(this)"' : '';
+  const chev    = tienePagos ? '<span class="chev">\u203A</span>' : '';
+  return `<div class="li${clsExp}"${onTap}>
     <div class="top">
       <div>
         <div class="who">${esc(quien)}</div>
@@ -796,11 +824,21 @@ function filaFactura(it, tipo){
         ${(it.vence && it.vence !== '-') ? `<span class="vto" style="margin-left:6px">Vence: <b>${fmtFecha(it.vence)}</b></span>` : ''}
       </div>
       <div style="text-align:right">
-        <div class="saldo-lbl">Saldo</div>
+        <div class="saldo-lbl">Saldo${chev}</div>
         <div class="saldo-val" style="color:${it.estado==='DEBE'?'var(--rojo)':'var(--ok)'}">${fmtMoney(it.saldo)}</div>
       </div>
     </div>
+    ${tienePagos ? `<div class="pagos-wrap" style="display:none">
+      <div class="pagos-title">Pagos (${pagos.length})</div>
+      ${pagosHtml}
+    </div>` : ''}
   </div>`;
+}
+
+function togglePagos(el){
+  el.classList.toggle('open');
+  const w = el.querySelector('.pagos-wrap');
+  if(w) w.style.display = (w.style.display === 'none' ? 'block' : 'none');
 }
 
 function cortarTipo(t){
