@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1b4332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gesti&#243;n Agro">
+<title>Gesti&#243;n Agro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
+     CONFIGURACION DE LECTURA  (no tocar salvo que cambien los IDs)
+     El ID del archivo y la API Key se setean abajo en el bloque JS.
+     &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+
+  :root{
+    --bg:        #f4f1e9;
+    --bg-2:      #ece7da;
+    --paper:     #ffffff;
+    --ink:       #1c1c17;
+    --ink-soft:  #6f6c5f;
+    --line:      #e3ddcd;
+    --green:     #1b4332;
+    --green-2:   #2d6a4f;
+    --green-3:   #40916c;
+    --rojo:      #a32319;
+    --rojo-bg:   #fbe9e7;
+    --ambar:     #9a5b09;
+    --ambar-bg:  #fdf1dd;
+    --ok:        #1b7a4b;
+    --ok-bg:     #e6f4ea;
+    --radius:    16px;
+    --shadow:    0 1px 2px rgba(28,28,23,.05), 0 8px 24px rgba(28,28,23,.06);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+  body{
+    font-family:'Hanken Grotesk', system-ui, sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(45,106,79,.10), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{ max-width:520px; margin:0 auto; padding:0 0 40px; }
+
+  /* &#9472;&#9472; HEADER &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  header{
+    position:sticky; top:0; z-index:30;
+    padding:max(14px, env(safe-area-inset-top)) 18px 14px;
+    background:linear-gradient(180deg, var(--green) 0%, var(--green-2) 100%);
+    color:#f4f1e9;
+    border-radius:0 0 22px 22px;
+    box-shadow:0 6px 22px rgba(27,67,50,.28);
+  }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .brand{ display:flex; align-items:center; gap:9px; }
+  .brand .leaf{
+    width:30px; height:30px; border-radius:9px; flex:none;
+    background:rgba(255,255,255,.14); display:grid; place-items:center;
+    font-size:16px;
+  }
+  .brand b{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; letter-spacing:.2px; }
+  .brand span{ display:block; font-size:10.5px; opacity:.75; margin-top:-2px; letter-spacing:.3px; }
+
+  .btn-refresh{
+    border:none; cursor:pointer; color:#f4f1e9;
+    background:rgba(255,255,255,.13);
+    width:38px; height:38px; border-radius:11px; flex:none;
+    display:grid; place-items:center; transition:.2s;
+  }
+  .btn-refresh:active{ transform:scale(.92); background:rgba(255,255,255,.22); }
+  .btn-refresh svg{ width:18px; height:18px; }
+  .btn-refresh.spin svg{ animation:spin .8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* selector de empresa */
+  .empresas{ display:flex; gap:6px; margin-top:14px; }
+  .empresas button{
+    flex:1; border:none; cursor:pointer;
+    font-family:inherit; font-weight:600; font-size:13px; letter-spacing:.4px;
+    padding:9px 4px; border-radius:11px; color:#dfe9e2;
+    background:rgba(255,255,255,.10); transition:.2s;
+  }
+  .empresas button.active{ background:#f4f1e9; color:var(--green); box-shadow:0 3px 10px rgba(0,0,0,.18); }
+
+  .razon{ margin-top:13px; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+  .razon h1{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.15; }
+  .razon .upd{ font-size:10.5px; opacity:.78; white-space:nowrap; }
+
+  /* &#9472;&#9472; TABS &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  nav{
+    position:sticky; top:0; z-index:20;
+    display:flex; gap:4px; padding:12px 14px 6px;
+  }
+  nav button{
+    flex:1; border:none; cursor:pointer; font-family:inherit;
+    font-weight:600; font-size:13px; padding:10px 4px; border-radius:12px;
+    color:var(--ink-soft); background:transparent; transition:.18s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  nav button.active{ background:var(--paper); color:var(--green); box-shadow:var(--shadow); }
+  nav .pill{
+    min-width:18px; height:18px; padding:0 5px; border-radius:9px;
+    background:var(--bg-2); color:var(--ink-soft);
+    font-size:10.5px; font-weight:700; display:grid; place-items:center;
+  }
+  nav button.active .pill{ background:var(--green); color:#fff; }
+  nav .pill.alert{ background:var(--rojo); color:#fff; }
+
+  /* &#9472;&#9472; PANELES &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  main{ padding:6px 14px 0; }
+  .panel{ display:none; animation:fade .35s ease both; }
+  .panel.show{ display:block; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+  .group-title{
+    display:flex; align-items:center; gap:8px;
+    font-size:11.5px; font-weight:700; letter-spacing:.9px; text-transform:uppercase;
+    color:var(--ink-soft); margin:18px 4px 9px;
+  }
+  .group-title .ct{
+    margin-left:auto; font-size:11px; background:var(--bg-2);
+    color:var(--ink-soft); padding:2px 8px; border-radius:8px; letter-spacing:.3px;
+  }
+  .group-title .ic{ font-size:14px; }
+
+  .card{
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius); padding:13px 14px; margin-bottom:9px;
+    box-shadow:var(--shadow);
+    animation:fade .4s ease both;
+  }
+  .card .row1{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .card .name{ font-weight:600; font-size:14.5px; line-height:1.2; }
+  .card .sub{ font-size:12px; color:var(--ink-soft); margin-top:3px; }
+  .card .sub b{ font-weight:600; color:var(--ink); }
+
+  .amount{
+    font-family:'Fraunces',serif; font-weight:600; font-size:16px;
+    font-variant-numeric:tabular-nums; white-space:nowrap; text-align:right;
+  }
+  .amount.debe{ color:var(--rojo); }
+  .amount.small{ font-size:13.5px; font-weight:500; }
+
+  .meta{ display:flex; align-items:center; gap:8px; margin-top:9px; flex-wrap:wrap; }
+
+  .badge{
+    font-size:10.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
+    padding:3px 9px; border-radius:8px; white-space:nowrap;
+  }
+  .b-venc{ background:var(--rojo-bg); color:var(--rojo); }
+  .b-prox{ background:var(--ambar-bg); color:var(--ambar); }
+  .b-debe{ background:var(--rojo-bg); color:var(--rojo); }
+  .b-pag { background:var(--ok-bg);   color:var(--ok); }
+  .b-tipo{ background:var(--bg-2); color:var(--ink-soft); }
+
+  .vto{ font-size:11.5px; color:var(--ink-soft); }
+  .vto b{ color:var(--ink); font-weight:600; }
+
+  .empty{
+    text-align:center; color:var(--ink-soft); font-size:13px;
+    padding:26px 10px; background:var(--paper); border:1px dashed var(--line);
+    border-radius:var(--radius); margin-bottom:9px;
+  }
+  .empty .ic{ font-size:24px; display:block; margin-bottom:6px; opacity:.6; }
+
+  /* lista compras/ventas */
+  .li{
+    background:var(--paper); border:1px solid var(--line); border-radius:14px;
+    padding:12px 13px; margin-bottom:8px; box-shadow:var(--shadow);
+    animation:fade .4s ease both;
+  }
+  .li .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .li .who{ font-weight:600; font-size:14px; line-height:1.2; }
+  .li .fac{ font-size:11.5px; color:var(--ink-soft); margin-top:3px; font-variant-numeric:tabular-nums; }
+  .li .bottom{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; }
+  .li .saldo-lbl{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px; }
+  .li .saldo-val{ font-family:'Fraunces',serif; font-weight:600; font-size:14.5px; font-variant-numeric:tabular-nums; }
+
+  /* &#9472;&#9472; BUSCADOR &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  .search{ position:relative; margin:14px 4px 4px; }
+  .search input{
+    width:100%; border:1px solid var(--line); background:var(--paper);
+    border-radius:13px; padding:12px 38px 12px 38px; font-family:inherit;
+    font-size:14.5px; color:var(--ink); box-shadow:var(--shadow); outline:none;
+    transition:border-color .15s;
+  }
+  .search input:focus{ border-color:var(--green-3); }
+  .search input::placeholder{ color:var(--ink-soft); opacity:.7; }
+  .search .si{ position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:15px; opacity:.5; pointer-events:none; }
+  .search .clear{
+    position:absolute; right:9px; top:50%; transform:translateY(-50%);
+    border:none; background:var(--bg-2); width:25px; height:25px; border-radius:50%;
+    cursor:pointer; color:var(--ink-soft); font-size:13px; line-height:1; display:none;
+  }
+  .search .clear:active{ background:var(--line); }
+
+  /* &#9472;&#9472; RESUMEN DE BUSQUEDA &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472; */
+  .resumen{
+    background:linear-gradient(180deg, var(--green) 0%, var(--green-2) 100%);
+    color:#f4f1e9; border-radius:14px; padding:12px 15px; margin:9px 4px 12px;
+    box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:10px;
+    animation:fade .3s ease both;
+  }
+  .resumen .lbl{ font-size:11px; opacity:.8; letter-spacing:.3px; }
+  .resumen .cnt{ font-size:14px; font-weight:600; margin-top:2px; }
+  .resumen .val{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; font-variant-numeric:tabular-nums; margin-top:1px; }
+
+  .nota{
+    font-size:11.5px; color:var(--ink-soft); text-align:center; padding:9px 12px;
+    background:var(--paper); border:1px dashed var(--line); border-radius:12px;
+    margin:4px 4px 10px; line-height:1.4;
+  }
+
+  /* estados de carga */
+  .state{ padding:60px 24px; text-align:center; color:var(--ink-soft); }
+  .state .sp{
+    width:34px; height:34px; border-radius:50%; margin:0 auto 16px;
+    border:3px solid var(--bg-2); border-top-color:var(--green-3);
+    animation:spin .8s linear infinite;
+  }
+  .state h2{ font-family:'Fraunces',serif; color:var(--ink); font-size:18px; font-weight:600; margin-bottom:8px; }
+  .state p{ font-size:13px; line-height:1.5; }
+  .state .err-ic{ font-size:34px; margin-bottom:12px; }
+  .state code{ background:var(--bg-2); padding:1px 6px; border-radius:5px; font-size:12px; }
+  .state button{
+    margin-top:18px; border:none; cursor:pointer; font-family:inherit; font-weight:600;
+    background:var(--green); color:#fff; padding:11px 22px; border-radius:12px; font-size:14px;
+  }
+
+  .foot{ text-align:center; font-size:10.5px; color:var(--ink-soft); padding:22px 10px 4px; opacity:.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER (oculto hasta cargar) -->
+  <header id="hdr" style="display:none">
+    <div class="topbar">
+      <div class="brand">
+        <div class="leaf">&#127807;</div>
+        <div>
+          <b>Gesti&#243;n Agro</b>
+          <span>Panel de control</span>
+        </div>
+      </div>
+      <button class="btn-refresh" id="btnRefresh" title="Actualizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>
+        </svg>
+      </button>
+    </div>
+    <div class="empresas" id="empresas"></div>
+    <div class="razon">
+      <h1 id="razon">&#8212;</h1>
+      <div class="upd" id="upd"></div>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav id="tabs" style="display:none">
+    <button data-tab="vehiculos" class="active">&#128668; Veh&#237;culos <span class="pill" id="p-vehiculos">0</span></button>
+    <button data-tab="compras">&#129534; Compras <span class="pill" id="p-compras">0</span></button>
+    <button data-tab="ventas">&#128200; Ventas <span class="pill" id="p-ventas">0</span></button>
+  </nav>
+
+  <main id="main">
+    <!-- estado de carga inicial -->
+    <div class="state" id="loading">
+      <div class="sp"></div>
+      <h2>Cargando datos&#8230;</h2>
+      <p>Trayendo la informaci&#243;n desde Drive</p>
+    </div>
+  </main>
+
+  <div class="foot" id="foot" style="display:none">Datos sincronizados desde Google Drive</div>
+</div>
+
+<script>
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   CONFIGURACION  \u2014  ac\u00E1 van el ID del archivo y la API Key
+   \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+const FILE_ID = "163KFuUcOFwugCbW-9EgTNUrPgiFrBMq3";
+const API_KEY = "AIzaSyDZ9ieAZ-l8eL8QEn71NNOYVnhLlLFLSf4";
+const DRIVE_URL = id =>
+  `https://www.googleapis.com/drive/v3/files/${FILE_ID}?alt=media&key=${API_KEY}&_=${Date.now()}`;
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+
+let DATA = null;
+let empresaActual = null;
+let tabActual = "vehiculos";
+let filtros = { compra:'', venta:'' };
+const MAX_MOSTRAR = 100;
+
+const $ = id => document.getElementById(id);
+
+const fmtMoney = n =>
+  new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', minimumFractionDigits:2 })
+    .format(Number(n) || 0);
+
+// normaliza fechas: acepta YYYYMMDD, DD/MM/YYYY o lo que venga
+function fmtFecha(v){
+  if(v === null || v === undefined) return "\u2014";
+  const s = String(v).trim();
+  if(!s || s === "-" || s === "----" || s === "None") return "\u2014";
+  if(/^\d{8}$/.test(s)) return `${s.slice(6,8)}/${s.slice(4,6)}/${s.slice(0,4)}`;
+  return s;
+}
+
+function getEmpresas(d){
+  const cont = d.empresas || d;            // soporta {empresas:{...}} o plano
+  const out = {};
+  for(const k in cont){
+    if(k === "ultima_actualizacion") continue;
+    if(cont[k] && typeof cont[k] === "object") out[k] = cont[k];
+  }
+  return out;
+}
+
+async function cargar(){
+  const btn = $('btnRefresh');
+  if(btn) btn.classList.add('spin');
+  try{
+    const res = await fetch(DRIVE_URL(), { cache:'no-store' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    DATA = await res.json();
+    render();
+  }catch(err){
+    mostrarError(err);
+  }finally{
+    if(btn) btn.classList.remove('spin');
+  }
+}
+
+function mostrarError(err){
+  $('hdr').style.display = 'none';
+  $('tabs').style.display = 'none';
+  $('foot').style.display = 'none';
+  $('main').innerHTML = `
+    <div class="state">
+      <div class="err-ic">\u{1F4E1}</div>
+      <h2>No se pudieron cargar los datos</h2>
+      <p>
+        Revis\u00E1 que el archivo de Drive est\u00E9 compartido como
+        <b>"Cualquiera con el enlace"</b> y que haya conexi\u00F3n a internet.<br><br>
+        <code>${(err && err.message) ? err.message : 'error desconocido'}</code>
+      </p>
+      <button onclick="cargar()">Reintentar</button>
+    </div>`;
+}
+
+function render(){
+  const empresas = getEmpresas(DATA);
+  const nombres = Object.keys(empresas);
+  if(nombres.length === 0){ mostrarError(new Error('El archivo no tiene empresas')); return; }
+  if(!empresaActual || !empresas[empresaActual]) empresaActual = nombres[0];
+
+  $('hdr').style.display = 'block';
+  $('tabs').style.display = 'flex';
+  $('foot').style.display = 'block';
+
+  // selector de empresas (din\u00E1mico)
+  const cont = $('empresas');
+  cont.innerHTML = '';
+  nombres.forEach(n => {
+    const b = document.createElement('button');
+    b.textContent = n;
+    if(n === empresaActual) b.classList.add('active');
+    b.onclick = () => { empresaActual = n; render(); };
+    cont.appendChild(b);
+  });
+
+  const emp = empresas[empresaActual];
+  $('razon').textContent = emp.razon_social || empresaActual;
+  $('upd').textContent = DATA.ultima_actualizacion ? '\u27F3 ' + DATA.ultima_actualizacion : '';
+
+  // contadores de las solapas
+  const a = emp.alertas || {};
+  const totVehic = (a.vehiculos||[]).length + (a.seguros||[]).length;
+  const debeCompras = (emp.compras||[]).filter(x => x.estado === 'DEBE').length;
+  const debeVentas  = (emp.ventas ||[]).filter(x => x.estado === 'DEBE').length;
+
+  setPill('p-vehiculos', totVehic, true);
+  setPill('p-compras', debeCompras, false);
+  setPill('p-ventas',  debeVentas,  false);
+
+  pintarTabs();
+  pintarPanel(emp);
+}
+
+function setPill(id, n, esAlerta){
+  const el = $(id);
+  el.textContent = n;
+  el.classList.toggle('alert', esAlerta && n > 0);
+}
+
+function pintarTabs(){
+  document.querySelectorAll('#tabs button').forEach(b => {
+    const on = b.dataset.tab === tabActual;
+    b.classList.toggle('active', on);
+    b.onclick = () => { tabActual = b.dataset.tab; const emp = getEmpresas(DATA)[empresaActual]; pintarTabs(); pintarPanel(emp); };
+  });
+}
+
+function pintarPanel(emp){
+  let html = '';
+  if(tabActual === 'vehiculos')    html = vistaVehiculos(emp);
+  else if(tabActual === 'compras') html = vistaListaConBuscador(emp.compras || [], 'compra');
+  else                             html = vistaListaConBuscador(emp.ventas  || [], 'venta');
+  $('main').innerHTML = `<div class="panel show">${html}</div>`;
+
+  if(tabActual === 'compras' || tabActual === 'ventas'){
+    const tipo  = tabActual === 'compras' ? 'compra' : 'venta';
+    const items = tabActual === 'compras' ? (emp.compras||[]) : (emp.ventas||[]);
+    wireBuscador(items, tipo);
+  } else {
+    // stagger en las cards de vehiculos
+    document.querySelectorAll('#main .card').forEach((el,i)=>{
+      el.style.animationDelay = Math.min(i*28, 320) + 'ms';
+    });
+  }
+}
+
+/* \u2500\u2500 BUSCADOR (engancha el input sin perder el foco) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function wireBuscador(items, tipo){
+  const inp = $('buscador');
+  const clr = $('btnClear');
+  if(!inp) return;
+  const refrescarClear = () => { clr.style.display = inp.value ? 'block' : 'none'; };
+  inp.oninput = () => { filtros[tipo] = inp.value; refrescarClear(); renderLista(items, tipo); };
+  clr.onclick  = () => { inp.value=''; filtros[tipo]=''; refrescarClear(); renderLista(items, tipo); inp.focus(); };
+  refrescarClear();
+  renderLista(items, tipo);
+}
+
+/* \u2500\u2500 VISTA VEHICULOS (solo vehiculos + seguros) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function vistaVehiculos(emp){
+  const a = emp.alertas || {};
+  const total = (a.vehiculos||[]).length + (a.seguros||[]).length;
+  if(total === 0){
+    return `<div style="height:6px"></div>
+      <div class="empty"><span class="ic">\u2713</span>Sin vencimientos pr\u00F3ximos de veh\u00EDculos o seguros</div>`;
+  }
+  let h = '';
+  h += grupo('\u{1F69C}', 'Veh\u00EDculos', a.vehiculos, v => cardVehiculo(v));
+  h += grupo('\u{1F6E1}\uFE0F', 'Seguros', a.seguros, s => cardSeguro(s));
+  return h;
+}
+
+function grupo(ic, titulo, items, fn){
+  items = items || [];
+  if(items.length === 0) return '';
+  return `<div class="group-title"><span class="ic">${ic}</span>${titulo}
+            <span class="ct">${items.length}</span></div>` +
+         items.map(fn).join('');
+}
+
+function badgeEstado(estado){
+  if(estado === 'VENCIDO') return `<span class="badge b-venc">Vencido</span>`;
+  if(estado === 'PROXIMO') return `<span class="badge b-prox">Pr\u00F3ximo</span>`;
+  if(estado === 'DEBE')    return `<span class="badge b-debe">Debe</span>`;
+  if(estado === 'PAGADO')  return `<span class="badge b-pag">Pagado</span>`;
+  return `<span class="badge b-tipo">${estado||''}</span>`;
+}
+
+function cardAlerta(nombre, sub, saldo, vence, estado, conMonto){
+  return `<div class="card">
+    <div class="row1">
+      <div>
+        <div class="name">${esc(nombre)}</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+      ${conMonto ? `<div class="amount debe">${fmtMoney(saldo)}</div>` : ''}
+    </div>
+    <div class="meta">
+      ${badgeEstado(estado)}
+      <span class="vto">Vence: <b>${fmtFecha(vence)}</b></span>
+    </div>
+  </div>`;
+}
+
+function cardVehiculo(v){
+  return `<div class="card">
+    <div class="row1">
+      <div>
+        <div class="name">${esc(v.dominio)} <span style="font-weight:500;color:var(--ink-soft)">\u00B7 ${esc(v.tipo)}</span></div>
+        <div class="sub">${esc(v.campo)}</div>
+      </div>
+    </div>
+    <div class="meta">
+      ${badgeEstado(v.estado)}
+      <span class="vto">Vence: <b>${fmtFecha(v.vence)}</b></span>
+    </div>
+  </div>`;
+}
+
+function cardSeguro(s){
+  return `<div class="card">
+    <div class="row1">
+      <div>
+        <div class="name">${esc(s.dominio)} <span style="font-weight:500;color:var(--ink-soft)">\u00B7 ${esc(s.tipo_seguro)}</span></div>
+        <div class="sub">${esc(s.aseguradora)}</div>
+      </div>
+    </div>
+    <div class="meta">
+      ${badgeEstado(s.estado)}
+      <span class="vto">Vence: <b>${fmtFecha(s.vence)}</b></span>
+    </div>
+  </div>`;
+}
+
+/* \u2500\u2500 VISTA COMPRAS / VENTAS (con buscador) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+function vistaListaConBuscador(items, tipo){
+  if(!items || items.length === 0){
+    return `<div style="height:6px"></div>
+      <div class="empty"><span class="ic">\u{1F4ED}</span>No hay ${tipo === 'compra' ? 'compras' : 'ventas'} para mostrar</div>`;
+  }
+  const ph = tipo === 'compra' ? 'Buscar proveedor o N\u00B0 factura\u2026' : 'Buscar cliente o N\u00B0 factura\u2026';
+  return `<div class="search">
+      <span class="si">\u{1F50D}</span>
+      <input id="buscador" type="text" inputmode="search" autocomplete="off"
+             placeholder="${ph}" value="${esc(filtros[tipo])}">
+      <button class="clear" id="btnClear" title="Borrar">\u2715</button>
+    </div>
+    <div id="resBox"></div>
+    <div id="listBox"></div>`;
+}
+
+// renderiza SOLO el resumen + la lista (no toca el input, as\u00ED no pierde el foco)
+function renderLista(items, tipo){
+  const term = (filtros[tipo] || '').trim().toLowerCase();
+  let filtrados = items;
+  if(term){
+    filtrados = items.filter(it => {
+      const quien = (tipo === 'compra' ? it.proveedor : it.cliente) || '';
+      return quien.toLowerCase().includes(term) ||
+             String(it.factura || '').toLowerCase().includes(term);
+    });
+  }
+  const mostrar = filtrados.slice(0, MAX_MOSTRAR);
+
+  // \u2500\u2500 resumen \u2500\u2500
+  let res = '';
+  if(term && filtrados.length > 0){
+    const totalSaldo = filtrados.reduce((s,x)=> s + (Number(x.saldo)||0), 0);
+    const lblSaldo = tipo === 'compra' ? 'Saldo que debe' : 'Saldo a cobrar';
+    res = `<div class="resumen">
+      <div><div class="lbl">Resultados</div><div class="cnt">${filtrados.length} factura${filtrados.length===1?'':'s'}</div></div>
+      <div style="text-align:right"><div class="lbl">${lblSaldo}</div><div class="val">${fmtMoney(totalSaldo)}</div></div>
+    </div>`;
+  } else if(!term && items.length > MAX_MOSTRAR){
+    res = `<div class="nota">Mostrando las \u00FAltimas ${MAX_MOSTRAR} de ${items.length}.<br>Us\u00E1 el buscador para encontrar el resto.</div>`;
+  }
+  $('resBox').innerHTML = res;
+
+  // \u2500\u2500 lista \u2500\u2500
+  if(filtrados.length === 0){
+    $('listBox').innerHTML = `<div class="empty"><span class="ic">\u{1F50D}</span>Sin resultados para "${esc(filtros[tipo])}"</div>`;
+    return;
+  }
+  const lbl = tipo === 'compra' ? 'Compras' : 'Ventas';
+  const ic  = tipo === 'compra' ? '\u{1F9FE}' : '\u{1F4C8}';
+  let h = `<div class="group-title"><span class="ic">${ic}</span>${lbl}
+             <span class="ct">${term ? filtrados.length : items.length}</span></div>`;
+  h += mostrar.map(it => filaFactura(it, tipo)).join('');
+  if(filtrados.length > MAX_MOSTRAR){
+    h += `<div class="nota">+${filtrados.length - MAX_MOSTRAR} m\u00E1s. Afin\u00E1 la b\u00FAsqueda para verlas.</div>`;
+  }
+  $('listBox').innerHTML = h;
+  $('listBox').querySelectorAll('.li').forEach((el,i)=>{
+    el.style.animationDelay = Math.min(i*22, 300) + 'ms';
+  });
+}
+
+function filaFactura(it, tipo){
+  const quien = tipo === 'compra' ? it.proveedor : it.cliente;
+  const tipoComp = (tipo === 'venta' && it.tipo) ? `<span class="badge b-tipo">${esc(cortarTipo(it.tipo))}</span>` : '';
+  return `<div class="li">
+    <div class="top">
+      <div>
+        <div class="who">${esc(quien)}</div>
+        <div class="fac">Fact. ${esc(it.factura)} \u00B7 ${fmtFecha(it.fecha)}</div>
+      </div>
+      <div class="amount small">${fmtMoney(it.total)}</div>
+    </div>
+    <div class="bottom">
+      <div>
+        ${badgeEstado(it.estado)}
+        ${tipoComp}
+        ${(it.vence && it.vence !== '-') ? `<span class="vto" style="margin-left:6px">Vence: <b>${fmtFecha(it.vence)}</b></span>` : ''}
+      </div>
+      <div style="text-align:right">
+        <div class="saldo-lbl">Saldo</div>
+        <div class="saldo-val" style="color:${it.estado==='DEBE'?'var(--rojo)':'var(--ok)'}">${fmtMoney(it.saldo)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function cortarTipo(t){
+  t = String(t||'');
+  return t.length > 22 ? t.slice(0,22) + '\u2026' : t;
+}
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// arranque
+$('btnRefresh').addEventListener('click', cargar);
+cargar();
+</script>
+</body>
+</html>
