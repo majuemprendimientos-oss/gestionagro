@@ -794,8 +794,10 @@ function renderLista(items, tipo){
 function filaFactura(it, tipo){
   const quien = tipo === 'compra' ? it.proveedor : it.cliente;
   const tipoComp = (tipo === 'venta' && it.tipo) ? `<span class="badge b-tipo">${esc(cortarTipo(it.tipo))}</span>` : '';
-  const pagos = Array.isArray(it.pagos) ? it.pagos : [];
+  const pagos = Array.isArray(it.pagos) ? it.pagos
+              : (Array.isArray(it.cobros) ? it.cobros : []);
   const tienePagos = pagos.length > 0;
+  const etiqueta = (tipo === 'venta') ? 'Cobros' : 'Pagos';
   let pagosHtml = '';
   if(tienePagos){
     pagosHtml = pagos.map(p => `
@@ -829,7 +831,7 @@ function filaFactura(it, tipo){
       </div>
     </div>
     ${tienePagos ? `<div class="pagos-wrap" style="display:none">
-      <div class="pagos-title">Pagos (${pagos.length})</div>
+      <div class="pagos-title">${etiqueta} (${pagos.length})</div>
       ${pagosHtml}
     </div>` : ''}
   </div>`;
