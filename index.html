@@ -228,6 +228,7 @@
   }
   .resumen .lbl{ font-size:11px; opacity:.8; letter-spacing:.3px; }
   .resumen .cnt{ font-size:14px; font-weight:600; margin-top:2px; }
+  .resumen .sub{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
   .resumen .val{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; font-variant-numeric:tabular-nums; margin-top:1px; }
 
   .nota{
@@ -761,7 +762,7 @@ function renderLista(items, tipo){
     const totalSaldo = filtrados.reduce((s,x)=> s + (Number(x.saldo)||0), 0);
     const lblSaldo = tipo === 'compra' ? 'Saldo que debe' : 'Saldo a cobrar';
     res = `<div class="resumen">
-      <div><div class="lbl">Resultados</div><div class="cnt">${filtrados.length} factura${filtrados.length===1?'':'s'}</div></div>
+      <div><div class="lbl">Resultados</div><div class="cnt">${filtrados.length} factura${filtrados.length===1?'':'s'}</div><div class="sub">${deben.length} con saldo pendiente</div></div>
       <div style="text-align:right"><div class="lbl">${lblSaldo}</div><div class="val">${fmtMoney(totalSaldo)}</div></div>
     </div>`;
   }
